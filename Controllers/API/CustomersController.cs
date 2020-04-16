@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 using Vidly.DTO;
 using Vidly.Models;
+using System.Data.Entity;
 
 namespace Vidly.Controllers.API
 {
@@ -25,9 +23,12 @@ namespace Vidly.Controllers.API
         }
 
         //GET /api/customers
-        public IEnumerable<CustomerDto> GetCustomers()
+        public IHttpActionResult GetCustomers()
         {
-            return _context.Customers.ToList().Select(Mapper.Map<Customer, CustomerDto>);
+            return Ok(_context.Customers
+                .Include(c => c.MembershipType)
+                .ToList()
+                .Select(Mapper.Map<Customer, CustomerDto>));
         }
 
         //GET /api/customer/2
@@ -74,15 +75,14 @@ namespace Vidly.Controllers.API
 
             if (dbCustomer == null)
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             Mapper.Map(customerDto, dbCustomer);
 
-
             _context.SaveChanges();
 
-            return Ok(dbCustomer);
+            return Ok();
         }
 
         // DELETE /api/customers/1
