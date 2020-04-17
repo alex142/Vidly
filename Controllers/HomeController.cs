@@ -1,10 +1,12 @@
 ﻿using System.Web.Mvc;
+using System.Web.UI;
 
 namespace Vidly.Controllers
 {
     [AllowAnonymous]
     public class HomeController : Controller
     {
+        [OutputCache(Duration = 0)]
         public ActionResult Index()
         {
             return View();
